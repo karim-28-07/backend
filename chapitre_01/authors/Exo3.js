@@ -6,7 +6,7 @@ app.listen(port, () => {
   console.log('Server started on port: ' + port);
 });
 
-var books = [
+var listBooks = [
     "Beowulf",
     "Hamlet, Othello, Romeo and Juliet, MacBeth",
     "Oliver Twist, A Christmas Carol",
@@ -15,26 +15,14 @@ var books = [
 ]
 
 
-app.get('/authors/1/books/', (req, res) => {
+app.get('/authors/:id/books/', (req, res) => {
+
+  var indexArray = req.params.id - 1;
+
+  var books = listBooks[indexArray]
   
-    res.send(books[0]);
+    res.send(books);
 
   });
-app.get('/authors/2/books/', (req, res) => {
-  
-    res.send(books[1]);
-
-  });
-app.get('/authors/3/books/', (req, res) => {
-  
-    res.send(books[2]);
-
-  });
-app.get('/authors/4/books/', (req, res) => {
-  
-    res.send(books[3]);
-
-  });
-
 
 
