@@ -17,8 +17,6 @@ const debug = ((req, res, next) => {
 
 app.use(debug)
 
-
-
 const port = 9000
 
 app.get("/heros", (req,res) => {
@@ -43,25 +41,99 @@ app.get("/heros/:name", (req,res) => {
     })
 })
 
-app.post("/heros/:name/powers", (req,res)=>{
+app.get("/heros/:name/powers", (req,res)=>{
     
-    const power  = req.params.power
-
-    console.log("power : ", req.params.power)
+    const nameHero  = req.params.name
 
     const listPowerHeros = superHeros.find((elem)=>{
 
-       return  elem.power.toLowerCase() === power.toLowerCase()
+       return  nameHero === elem.name.toLowerCase()
     })
 
-    if(listPowerHeros)
+    res.json (listPowerHeros.power)
+})
 
-    res.json ({
-        listPowerHeros
+app.post("/heros",(req,res)=>{
+
+    console.log("req.body", req.body)
+
+    // res.json()
+
+    const newHero = { name : req.body.name}
+
+    console.log("newHero", newHero)
+
+    superHeros.push(newHero)
+
+    res.json({
+        message : "ok héros ajouter",
+        
+
     })
 })
 
+const transformName = (req, res, next) => {
+    console.log("req.body.name")
+
+    if(req.body.name === undefined){
+        res.json({
+            errorMessage : "to send a hero you must be send it"
+        })
+    }else {
+        req.body.name = req.body.name.toLowerCase()
+
+        next()
+    }
+
+}
+
+app.post("/heros",transformName, (req,res)=>{
+
+    // console.log("req.body", req.body)
+
+    // res.json()
+
+    const newHero = req.body.name
+
+    superHeros.push(newHero)
+
+    res.json({
+        message : "ok héros ajouter",
+        newHero
+    })
+})
+
+app.post("/heros/:name/powers", (req,res)=>{
+
+    const nameHero = req.params.name.toLowerCase()
+
+    const selectedHero = superHeros.find((elem)=>{
+
+        return nameHero === elem.name
+    })
+
+    if(selectedHero) {
+
+        const powerHero = req.body.power
+
+        console.log("powerHero  req.body.power", req.body.power)
+
+        selectedHero.powers.push(powerHero)
+        
+        console.log("selectedHero.powers", selectedHero.powers)
+
+        res.json({
+            message : `Power added! The powers of ${nameHero} are ${selectedHero.powers}`
+        })
+    }else {
+        res.json({
+            message : "hero not found"
+
+        })
     
+    }
+})
+
 // gestion d'erreurs
 
 app.get('*', (req, res) => {
@@ -69,8 +141,6 @@ app.get('*', (req, res) => {
         errorMessage: "The route doesn't exist :'("
     })
 })
-
-
 
 app.listen(port, () => {
     console.log("Server à l'écoute dans le port " + port);
