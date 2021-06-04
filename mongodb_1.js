@@ -260,7 +260,9 @@ db.students.find({ id: 6 })
 db.students.find({ id: 1 })
 
 // db.students.find({ id: 2 },{name:"Véronique", _id:0}) 
+db.students.find({id:2},{ville:0,_id:0})
 
 db.students.find({ville : "Paris"})
 
-db.students.find({ville : "Lyon"})
+// db.students.find({ville : "Lyon"})
+db.students.find({ville:"Lyon"},{ville:0,_id:0})
