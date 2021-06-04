@@ -1,6 +1,6 @@
 const express = require("express")
 const cors = require("cors")
-const { students} = require("./studentsListe.js")
+const { students } = require("./studentsListe.js")
 
 const app = express()
 
@@ -16,16 +16,19 @@ app.use((req, res, next) => {
 
 const port = 9000
 
-app.get("/students", (req,res) => {
+app.get("/students", (req, res) => {
     res.json(students)
 })
 
-app.post("/students", (req,res)=>{
-    const newStudents = req.body.name
+app.post("/students", (req, res) => {
+    const newStudents = req.body
     students.push(newStudents)
 
-    
+    res.json({
+        message: "Student Added",
+        newStudents
     })
+})
 
 
 app.listen(port, () => {
