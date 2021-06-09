@@ -97,10 +97,10 @@ app.get("/heros/:name", async (req, res) => {
         res.json({ listHeros })
 
     } catch (error) {
-
+            console.log(error)
         res.json({
-            listHeros
-        })
+            errormessage : "There was a problem !"
+        }, 500)
     }
 })
 

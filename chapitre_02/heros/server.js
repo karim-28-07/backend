@@ -1,64 +1,98 @@
 const express = require("express")
 const cors = require("cors")
-const { superHeros } = require("./dataHeros.js")
+const mongoose = require("mongoose")
+const Hero = require("./model/hero")
+
+mongoose.connect("mongodb://localhost:27017/herosDB", (err) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log("I'm connected to the database")
+    }
+})
+
+const port = 8000
 
 const app = express()
 
-app.use(express.json()) // permet de recevoir body json dans les requetes de postMan
-app.use(cors())
-
-// middleware avec use
-
-const debug = ((req, res, next) => {
-    console.log("I recieved the response")
+const debug = (req, res, next) => {
+    console.log("I received a request!");
 
     next()
-})
+}
+
+app.use(cors())
+
+app.use(express.json())
 
 app.use(debug)
 
-const port = 9000
+app.get("/heroes", async (req, res) => {
+    try {
+        const heroes = await Hero.find()
 
-app.get("/heros", (req, res) => {
-    res.json(superHeros)
+        res.json(heroes)
+    } catch (err) {
+        console.error(err)
+
+        res.json({ errorMessage: "There was a probleme :(" }, 500)
+    }
+
 })
 
-app.get("/heros/:name", (req, res) => {
+app.get("/heroes/:name",  async (req, res) => {
+    
+    try {
+        const name = req.params.name
+        console.log("name : ", req.params.name)
+        const listHeros = await Hero.findOne({ name: name })
+        res.json({listHeros})
 
-    const name = req.params.name
-
-    console.log("name : ", req.params.name)
-
-    const listHeros = superHeros.find((elem) => {
-
-        return elem.name.toLowerCase() === name.toLowerCase()
-    })
-
-    // if(listHeros)
-
-    res.json({
-        listHeros
-    })
+    } catch (error) {
+            console.log(error)
+        res.json({
+            errormessage : "There was a problem !"
+        }, 500)
+    }
 })
 
-app.get("/heros/:name/powers", (req, res) => {
+    
+    // const nameHero = req.params.name.toLowerCase()
+    // let selectedHero = {}
 
-    const nameHero = req.params.name
+    // for (var i = 0; i < superHeros.length; i++) {
 
-    const listPowerHeros = superHeros.find((elem) => {
+    //     if (superHeros[i].name.toLowerCase() === nameHero) {
+    //         selectedHero = superHeros[i]
+    //     }
+    // }
 
+    // if (Object.keys(selectedHero).length !== 0) {
+
+    //     res.json(selectedHero)
+    // } else {
+
+    //     res.json({
+    //         message: "Hero not found"
+    //     })
+    // }
+
+// })
+
+app.get("/heroes/:name/powers", (req, res) => {
+    const nameHero = req.params.name.toLowerCase()
+
+    const selectedHero = superHeros.find(elem => {
         return nameHero === elem.name.toLowerCase()
     })
 
-    res.json(listPowerHeros.power)
+    res.json(selectedHero.powers)
 })
 
 const transformName = (req, res, next) => {
-    console.log("req.body.name")
-
     if (req.body.name === undefined) {
         res.json({
-            errorMessage: "to send a hero you must be send it"
+            errorMessage: "To add a hero send at least he's name"
         })
     } else {
         req.body.name = req.body.name.toLowerCase()
@@ -68,15 +102,12 @@ const transformName = (req, res, next) => {
 
 }
 
-app.post("/heros", (req, res, next) => {
-
+app.post("/heroes", transformName, (req, res, next) => {
     const hero = req.body
 
     const selectedHero = superHeros.find(elem => {
-        return elem.name.toLowerCase() === hero.name.toLowerCase()
+        return elem.name.toLowerCase() === hero.name
     })
-
-    console.log("selectedHero", selectedHero);
 
     if (selectedHero) {
 
@@ -87,7 +118,7 @@ app.post("/heros", (req, res, next) => {
     } else {
         next()
     }
-}, transformName, (req, res) => {
+}, (req, res) => {
     // console.log(req.body);
 
     const hero = req.body
@@ -100,74 +131,63 @@ app.post("/heros", (req, res, next) => {
     })
 })
 
-app.post("/heros/:name/powers", (req, res) => {
-
+app.post("/heroes/:name/powers", (req, res) => {
     const nameHero = req.params.name.toLowerCase()
 
-    const selectedHero = superHeros.find((elem) => {
-
-        return nameHero === elem.name
+    const selectedHero = superHeros.find(elem => {
+        return nameHero === elem.name.toLowerCase()
     })
 
     if (selectedHero) {
+        const heroPower = req.body.power
 
-        const powerHero = req.body.power
-
-        console.log("powerHero  req.body.power", req.body.power)
-
-        selectedHero.powers.push(powerHero)
-
-        console.log("selectedHero.powers", selectedHero.powers)
+        selectedHero.powers.push(heroPower)
 
         res.json({
             message: `Power added! The powers of ${nameHero} are ${selectedHero.powers}`
         })
     } else {
         res.json({
-            message: "hero not found"
-
+            errorMessage: "Hero not found"
         })
-
     }
 })
 
 const continueIfHeroExists = (req, res, next) => {
-
-    const heroname = req.params.name.toLowerCase()
+    const heroName = req.params.name.toLowerCase()
 
     const selectedHero = superHeros.find(elem => {
-        return elem.name.toLowerCase() === heroname
+        return elem.name.toLowerCase() === heroName
     })
 
     if (selectedHero) {
         next()
     } else {
         res.json({
-            message: "The Hero doesn't exists "
+            errorMessage: "The hero doesn't exists"
         })
     }
 }
 
-app.delete("/heros/:name", continueIfHeroExists, (req, res) => {
-
+app.delete("/heroes/:name", continueIfHeroExists, (req, res) => {
     const heroName = req.params.name.toLowerCase()
 
-    // superHeros = superHeros.filter(elem =>{
+    // superHeros = superHeros.filter(elem => {
     //     return elem.name.toLowerCase() !== heroName
     // })
 
-    for (let i = 0; i < superHeros.length; i++) {
+    for (var i = 0; i < superHeros.length; i++) {
         if (superHeros[i].name.toLowerCase() === heroName) {
             superHeros.splice(i, 1)
         }
     }
 
     res.json({
-        message: `${heroName} hase been deleted`
+        message: `${heroName} effacé correctement`
     })
 })
 
-app.delete("heros/:name/power/:power", continueIfHeroExists, (req, res) => {
+app.delete("/heroes/:name/power/:power", continueIfHeroExists, (req, res) => {
     const heroName = req.params.name.toLowerCase()
     const heroPower = req.params.power.toLowerCase()
 
@@ -175,26 +195,25 @@ app.delete("heros/:name/power/:power", continueIfHeroExists, (req, res) => {
         return elem.name.toLowerCase() === heroName
     })
 
-    const indexPower = selectedHero.power.findIndex(elem => {
+    const indexPower = selectedHero.powers.findIndex(elem => {
         return elem === heroPower
     })
 
-    if (selectedHero > -1) {
-
-        selectedHero.power.splice(indexPower, 1)
+    if (indexPower > -1) {
+        selectedHero.powers.splice(indexPower, 1)
 
         res.json({
-            message: `The power ${heroPower} of ${heroName} has been deleted correctely`
+            message: `Le pouvoir ${heroPower} de ${heroName} a été effacé correctement`
         })
     } else {
         res.json({
-            messsage: `The power ${heroPower} doesn't exists for the hero ${heroName}`
+            message: `Le pouvoir ${heroPower} n'existe pas dans l'héro ${heroName}`
         })
     }
+
 })
 
-app.put("/heros/:name", continueIfHeroExists, (req, res) => {
-
+app.put("/heroes/:name", continueIfHeroExists, (req, res) => {
     const heroName = req.params.name.toLowerCase()
     const newHero = req.body
 
@@ -202,24 +221,21 @@ app.put("/heros/:name", continueIfHeroExists, (req, res) => {
         return elem.name.toLowerCase() === heroName
     })
 
-    // superHeros[heroId] = newHero
+    superHeros[heroId] = newHero
 
-    superHeros.splice(heroId, 1, newHero)
+    // superHeros.splice(heroId, 1, newHero) // Same as above
 
     res.json({
-        message: `${heroName} has been replaced correctly `
+        message: `${heroName} a été remplace correctement`
     })
 })
 
-// gestion d'erreurs
-
-app.get('*', (req, res) => {
+app.get("*", (req, res) => {
     res.json({
-        errorMessage: "The route doesn't exist :'("
-    })
+        errorMessage: "The route was not found"
+    }, 404)
 })
 
 app.listen(port, () => {
-    console.log("Server à l'écoute dans le port " + port);
+    console.log("Server is listening at port ", port);
 })
-
