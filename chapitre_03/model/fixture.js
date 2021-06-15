@@ -13,7 +13,7 @@ const addUsers = async () => {
 
     try {
        
-        await User.insert([
+        await User.insertMany([
             {
                 name: "Karim",
                 profilePicture: "Karim.png",
