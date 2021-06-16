@@ -16,13 +16,13 @@ app.use(cors())
 
 app.use(express.json())
 
-app.get("/username", async (req,res) => {
+app.get("/", async (req,res) => {
 
     try {
 
-        const username = await User.find()
+        const user = await User.find()
 
-        res.json(username)
+        res.json(user)
         
     } catch (error) {
         console.log(error)
@@ -30,6 +30,38 @@ app.get("/username", async (req,res) => {
         res.status(400).json({message : "There is problem with the usernam !!"})
     }
 })
+
+app.get("/users/add", async (req,res) => {
+
+    try {
+
+        const user = req.body 
+        const newUser = await User.creat(user)
+
+        res.json({
+            message : "The new user was added corectly",
+            newUser
+        })
+        
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message : "There is problem with the usernam !!"})
+    }
+})
+
+app.get("/users/:username", async (req, res) => {
+
+    try {
+
+        const username = req.params.username
+        const user = await User.findById(username)
+        
+    } catch (error) {
+        
+    }
+})
+
+
 
 
 app.listen(port, () => {
