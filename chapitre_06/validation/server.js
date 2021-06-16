@@ -55,9 +55,19 @@ app.get("/users/:username", async (req, res) => {
 
         const username = req.params.username
         const user = await User.findById(username)
+
+        if(user){
+
+            res.json(user)
+        }else {
+            res.json({
+                message : "The user cant not found"
+            })
+        }
         
     } catch (error) {
-        
+        console.log(error)
+        res.status(400).json({message : "There is problem with the usernam !!"})
     }
 })
 
