@@ -3,7 +3,7 @@ const router = express.Router()
 const expressValidator = require("express-validator");
 const {findUser, addUser, findUsername} = require("../controllers/usercontrollers")
 
-router.get("/users", findUser)
+router.get("/", findUser)
 
 router.post("/add", addUser)
 

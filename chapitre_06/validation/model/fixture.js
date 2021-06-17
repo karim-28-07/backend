@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const User = require("./User")
 
-mongoose.connect("mongoose://localhost:27017/userBD", (err) => {
+mongoose.connect("mongodb://localhost:27017/userBD", { useNewUrlParser: true }, (err) => {
     if (err) {
         console.error(err);
     } else {

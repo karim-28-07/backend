@@ -5,7 +5,7 @@ const findUser = async (req, res) => {
 
     try {
 
-        const user = await User.find()
+        const user = await User.find().lean()
 
         res.json(user)
 
