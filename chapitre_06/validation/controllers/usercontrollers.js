@@ -1,5 +1,6 @@
+
 const expressValidator = require("express-validator")
-const user = require("../model/User")
+const User = require("../model/User")
 
 const findUser = async (req, res) => {
 
@@ -10,8 +11,8 @@ const findUser = async (req, res) => {
         res.json(user)
 
     } catch (error) {
-
-        res.status(400).json({ message: "There is problem with the usernam !!", error })
+        console.log(error)
+        res.status(500).json({ message: "There is problem with the usernam !!", error })
     }
 }
 
@@ -46,7 +47,7 @@ const findUsername = async (req, res) => {
     try {
 
         const username = req.params.username
-        const userfound = await User.findOne(username)
+        const userfound = await User.findOne(username).lean()
 
         res.json(userfound)
 

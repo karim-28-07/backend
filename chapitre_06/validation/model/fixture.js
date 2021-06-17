@@ -1,7 +1,8 @@
 const mongoose = require("mongoose")
 const User = require("./User")
 
-mongoose.connect("mongodb://localhost:27017/userBD", { useNewUrlParser: true }, (err) => {
+mongoose.connect("mongodb://localhost:27017/userBD",{ useNewUrlParser: true },
+{ useUnifiedTopology: true }, (err) => {
     if (err) {
         console.error(err);
     } else {

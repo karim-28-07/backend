@@ -9,6 +9,6 @@ router.post("/add", addUser)
 
 router.get("/:username", findUsername)
 
-module.exports = {userRoutes : router}
+module.exports = router
 
 
