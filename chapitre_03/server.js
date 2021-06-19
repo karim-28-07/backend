@@ -53,10 +53,10 @@ app.post('/users/add', upload.single('new-image'), async (req, res) => {
 
         const userAdded = await User.create({
             name: req.body.name,
-            profilePicture: req.file.originalname
+            profilePicture: newImageName
         })
 
-        fs.renameSync(req.file.path, path.join(req.file.destination, req.file.originalname));
+        fs.renameSync(req.file.path, path.join(req.file.destination,newImageName ));
 
         res.json({
             message: "User ajouté correctement",
