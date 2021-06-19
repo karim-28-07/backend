@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 // Création du shéma pour la Bd userBD dans un fichier a part et l'utiliser partout 
 
 const userSchema = new mongoose.Schema({
-    name: String,
+    name: {type : String, unique : true },
     profilePicture : String,
     created: { type: Date, default: Date.now }
 })
