@@ -51,7 +51,7 @@ const findUsername = async (req, res) => {
     try {
 
         const username = req.params.username
-        const userfound = await User.findOne(username).lean()
+        const userfound = await User.findOne({username : username}).lean()
 
         res.json(userfound)
 
@@ -61,4 +61,41 @@ const findUsername = async (req, res) => {
     }
 }
 
-module.exports = { findUser, addUser, findUsername }
+const findUserById = async (req, res) => {
+
+    try {
+
+        const userId = req.params.id
+        const userfound = await User.findOne({_id : userId}).lean()
+
+        res.json(userfound)
+
+    } catch (error) {
+
+        res.status(400).json({ message: "There is problem with the usernam !!", error })
+    }
+}
+
+const findUserByEmail = async (req, res) => {
+
+    try {
+
+        const userEmail = req.params.email
+        console.log(userEmail)
+        const userFoundEmail = await User.findOne({email : userEmail}).lean()
+        console.log(userFoundEmail)
+        
+        if (userFoundEmail === null){
+            return res.json({
+                message : "Email is not valide"
+            })
+        }
+        res.json(userFoundEmail)
+
+    } catch (error) {
+
+        res.status(400).json({ message: "There is problem with the usernam !!", error })
+    }
+}
+
+module.exports = { findUser, addUser, findUsername, findUserById, findUserByEmail}
