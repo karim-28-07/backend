@@ -20,10 +20,14 @@ const addUser = async (req, res) => {
 
     try {
 
+        console.log(req.body)
+
         const error = expressValidator.validationResult(req);
         const user = req.body
 
-        if (!errors.isEmpty()) {
+
+        if (!error.isEmpty()) {
+            // console.log(error)
             res.status(400).json({ message: "There was a problem" })
 
         } else {

@@ -10,13 +10,15 @@ router.post("/add",
     expressValidator.body("email").isEmail(),
     expressValidator.body("age").isInt().isLength({ min: 2, max: 2 }),
     expressValidator.body("ville").custom(value => {
-        if (value === "Paris" || value === "Los Angeles" || value === "Tokyo"){
-            return value 
-        }else {
+        if (value === "Paris" || value === "Los Angeles" || value === "Tokyo") {
+            return value
+        } else {
             return false
         }
 
     }), addUser)
+
+    console.log("username", router.post("/add"));
 
 router.get("/:username", findUsername)
 

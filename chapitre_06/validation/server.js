@@ -17,11 +17,11 @@ const app = express()
 const port = 9000
 
 
+app.use(express.json())
 app.use(cors())
 
 app.use("/users", userRoutes)
 
-app.use(express.json())
 
 
 
