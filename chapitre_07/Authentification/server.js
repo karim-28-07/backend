@@ -40,8 +40,9 @@ app.post("/login", async (req, res) => {
         const passeword = req.body.passeword
         console.log(passeword)
         
-        const result = await bcryptjs.compareSync(passeword, user.passeword)
-        console.log(user.passeword)
+        const result = await bcryptjs.compare(passeword, user.passeword)
+        console.log(result)
+
         if(result){
 
             res.json({
@@ -54,7 +55,7 @@ app.post("/login", async (req, res) => {
         }
            
     } catch (error) {
-        res.status(401).json({message: "The user cant not creat"}, error)
+        res.status(401).json({message: "The user cant not creat", error})
     }
 })
 
