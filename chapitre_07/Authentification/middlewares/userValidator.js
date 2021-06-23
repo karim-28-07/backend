@@ -2,12 +2,16 @@ const expressValidator = require("express-validator");
 
 const validationUsers = [
 
+    expressValidator.body("username").isLength({ min: 3 }),
     expressValidator.body("email").isEmail(),
-    expressValidator.body("password").isLength({ min: 8 }).has().uppercase()
-    .has().lowercase().has().digits(2).has().not().spaces(),
-    expressValidator.body("firstName").isLength({ min: 2, max: 18 }),
-    expressValidator.body("surname").isLength({ min: 2, max: 18 }),
-    
+    expressValidator.body("age").isInt().isLength({ min: 2, max: 2 }),
+    expressValidator.body("ville").custom(value => {
+        if (value === "Paris" || value === "Los Angeles" || value === "Tokyo") {
+            return value
+        } else {
+            return false
+        }
+    })
 ]
 
 module.exports = {
