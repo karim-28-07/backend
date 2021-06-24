@@ -5,8 +5,9 @@ const Hotel = require("./model/Hotel")
 const Restaurant = require("./model/Restaurant")
 const { findById } = require("./model/Hotel")
 const { query } = require("express")
+const {port, mongoURL} = require("../config")
 
-mongoose.connect("mongodb://localhost:27017/Trippy_basics", (err) => {
+mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true },(err) => {
     if (err) {
         console.error(err);
     } else {
@@ -14,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/Trippy_basics", (err) => {
     }
 })
 
-const port = 8000
+
 
 const app = express()
 
@@ -25,6 +26,7 @@ const debug = (req, res, next) => {
 }
 
 app.use(cors())
+app.use("/api", router)
 
 app.use(express.json())
 app.use(debug)
